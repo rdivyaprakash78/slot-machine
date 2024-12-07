@@ -126,9 +126,61 @@ const formatSpinValues = (transposeValues) => {
     }
 }
 
+// Function to calculate winnings
+
+const getWinnings = (lines, bet, transpose) => {
+    let winnings = 0;
+    let allSame = true;
+
+    for (let i = 0 ; i<lines ; i++)
+        {
+            let row = transpose[i];
+            for (let i =1; i<row.length; i++){
+                if(row[0]!=row[i]) {
+                    allSame = false;
+                    break;
+                }
+            }
+            if(allSame == true)
+                {
+                    winnings += bet * SYMBOL_VALUES[row[0]];
+                } 
+            
+        }
+        return winnings;
+    }
+
+    
+
+// Flow of game
+
 const deposit = getDeposit();
-const lines = getLines();
-const bet = getBetPerLine(deposit, lines);
-const spin = getSpinValues();
-const transpose = getTransposeSpinValues(spin);
-formatSpinValues(transpose);
+let balance = deposit;
+
+while(true && balance > 0)
+{
+    const lines = getLines();
+    const bet = getBetPerLine(balance, lines);
+    balance = balance - (bet * lines);
+    console.log("Your current balance is : ", balance);
+    const spin = getSpinValues();
+    const transpose = getTransposeSpinValues(spin);
+    formatSpinValues(transpose);
+    const winnings = getWinnings(lines, bet, transpose);
+    balance = balance + winnings;
+    console.log("Your winnings are : ", winnings);
+    console.log("Your current balance : ", balance);
+    if (balance > 0) 
+        {
+            const playAgain = prompt("Do you want to play again? (yes/no) : ");
+            if(playAgain.toLowerCase()!= "yes") break;
+        }
+    else{
+        console.log("Insufficient balance. Game over.");
+        break;
+    }
+
+    
+}
+
+
